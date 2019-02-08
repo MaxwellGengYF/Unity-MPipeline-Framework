@@ -47,7 +47,7 @@ It is a pretty simple and clear demo code here, just draw a single pass which ha
 
 ## Features:
 
-### Events dependents:
+### Events dependent:
 
 Although we are trying to use such design pattern to avoid coupling, there are some coupling is useful and necessary, such as depth texture, for example an SSAO post processing will need Geometry Buffer like Depth Map, Normal Map, Specular Map, etc. But these maps has been generated from a previous event, so if the GBuffers are absence, there will be an unhappy result, so we want to have a dependent mark to another events:
 
@@ -60,7 +60,7 @@ To get another events is also sometimes necessary, so we have the API:
 
 ![getevent](demo/getevent.png)
 
-### Having Multiple Rendering Path:
+### Having Multiple Rendering Paths:
 
 As mentioned above, usually we may have different types of rendering path in one project, to change the source code in PipelineResources.cs, we can easily have multiple rendering path, firstly we need to add several available paths in the enum in PipelineResources.cs:
 
@@ -69,3 +69,7 @@ As mentioned above, usually we may have different types of rendering path in one
 For now you will be able to choose a path in PipelineCamera.cs, then you have to add an array of PipelineEvent into the global dictionary:
 
 ![addnewevents](demo/addnewevents.png)
+
+### Job system support:
+
+We want to use job system to do some calculations, which could gain performance benefits from multi-threading, to use job system, you can do the job schedule by overriding the PreRenderFrame method in PipelineEvent.cs, and a JobHandle.ScheduleBatchedJobs() will be called after all of the PreRenderFrame methods being finished and before any FrameUpdate methods being start. According to Unity's official tutorial, we should call ScheduleBatchedJobs as less as we can, so the scheduled jobs should be batched together.
