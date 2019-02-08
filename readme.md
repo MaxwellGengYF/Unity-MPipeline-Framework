@@ -1,6 +1,6 @@
 # MPipeline Framework
 ## Abstract:
-* MPipeline framework is a design pattern for Unity graphics programmers to develop there own rendering pipeline by using SRP. The goal of developing such a design pattern is, to enhance team-work's efficiency, reducing the coupling between different parts of rendering, and helping project resources management. MPipeline is an object-oriented based framework, store and manage data by using Unity Editor's serialize system.
+* MPipeline framework is a design pattern for Unity graphics programmers to develop their own rendering pipeline by using SRP. The goal of developing such a design pattern is, to enhance team-work's efficiency, reducing the coupling between different parts of rendering, and helping project resources management. MPipeline is an object-oriented based framework, store and manage data by using Unity Editor's serialize system.
 ## Features:
 * Designed for Scriptable Rendering Pipeline
 * Job System supported
