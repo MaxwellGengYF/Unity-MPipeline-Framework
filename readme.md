@@ -7,7 +7,9 @@
 * Toolbox and utility functions supported
 * Based on event-system design, reduce high-level coupling.
 ## Tutorial for Beginners:
+
 ### 1. Helloworld!
+
 Before reading this tutorial, I hope you have already studied the basic API in SRP and CommandBuffer, the first "Helloworld" event will be drawing a pure color onto screen, which should be easy to do. Firstly lets create a new script called "PureScreen.cs", and then type such code:
 
 ![hello-world](demo/helloworld.png)
@@ -18,7 +20,9 @@ After having a ScriptableObject instance in your project's folder, we can start 
 ![pipelineresources](demo/res.png)
 
 Then drag the PureScreen object we have already created at the last step into the "Demo Pipeline Events" array, just like the picture showed, and now our first pipeline is finished! you can drag this object into "Edit/Project Settings/Graphics" on the menu now. But how do we use the pipeline? The answer is quite simple, you need only add a component "PipelineCamera.cs" onto the target camera, then this camera will be available for your custom pipeline, there is a enum setting called "rendering path" in PipelineCamera.cs, this enum is just like Camera.RenderingPath in the legacy rendering pipeline, that means you can have multiple different rendering path for different camera, like unlit, forward, deferred, etc. We will discuss this later.
+
 ### 2. Property!
+
 Having properties is the most important step in a rendering pipeline, like material, no matter PostProcessing, or Skybox, they all need a material, and now we will show you how to create a property or properties inside the rendering events. In the helloworld step, we can see there are three methods called "Init", "CheckProperty" and "Dispose", that will be called while the main pipeline is initializing and disposing, just like Awake and OnDestroy in MonoBehaviour classes. CheckProperty method is design to prevent Unity editor accidentially remove or dispose some native properties, this method will only be called in Editor mode. So we will create the properties inside Init method, and dispose it(if necessary) in the Dispose method, For example, lets use a material to redo the helloworld again:
 
 ![property](demo/prop.png)
@@ -28,6 +32,7 @@ As you can see, we are loading the material from "unlitShader", which is a regul
 ![property-resources](demo/propRes.png)
 
 ### 3. Use SRP's API!
+
 As we declared before, MPipeline is an SRP based framework, so we passed the necessary datas from PipelineCommandData, which is a struct:
 
 ![commanddata](demo/commanddata.png)
@@ -39,3 +44,28 @@ The comment is pretty clear enough, so we can just write a simple pure-color pip
 It is a pretty simple and clear demo code here, just draw a single pass which has tag "LightMode" = "Unlit", the result will be looks like this:
 
 ![srptest](demo/srptest.png)
+
+## Features:
+
+### Events dependents:
+
+Although we are trying to use such design pattern to avoid coupling, there are some coupling is useful and necessary, such as depth texture, for example an SSAO post processing will need Geometry Buffer like Depth Map, Normal Map, Specular Map, etc. But these maps has been generated from a previous event, so if the GBuffers are absence, there will be an unhappy result, so we want to have a dependent mark to another events:
+
+![requireevent](demo/requireevent.png)
+
+By using RequireEventAttribute, when the main framework found the target type of events in the rendering path list, a connection will be created between those two events. In this example, the event "VolumetricLightEvent" is always disabled if the event "LightingEvent" is disabled, that means the property "Enabled" will always be False.
+To get another events is also sometimes necessary, so we have the API: 
+    MPipeline.RenderPipeline.GetEvent<T>(PipelineResources.CameraRenderingPath path) where T : PipelineEvent
+    MPipeline.RenderPipeline.GetEvent(PipelineResources.CameraRenderingPath path, Type targetType)
+
+![getevent](demo/getevent.png)
+
+### Having Multiple Rendering Path:
+
+As mentioned above, usually we may have different types of rendering path in one project, to change the source code in PipelineResources.cs, we can easily have multiple rendering path, firstly we need to add several available paths in the enum in PipelineResources.cs:
+
+![pathsenum](demo/pathsenum.png)
+
+For now you will be able to choose a path in PipelineCamera.cs, then you have to add an array of PipelineEvent into the global dictionary:
+
+![addnewevents](demo/addnewevents.png)
