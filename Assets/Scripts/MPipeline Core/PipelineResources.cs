@@ -18,23 +18,17 @@ namespace MPipeline
         {
             DemoPipeline = 0
         }
-        [Serializable]
-        public struct Shaders
+        public PipelineEvent[] demoPipelineEvents;
+        private static Dictionary<CameraRenderingPath, PipelineEvent[]> presetDict = new Dictionary<CameraRenderingPath, PipelineEvent[]>();
+        public Dictionary<CameraRenderingPath, PipelineEvent[]> renderingPaths
         {
-           //TODO
-           //Add Shaders here
+            get { return presetDict; }
         }
-        public Shaders shaders = new Shaders();
-        public PipelineEvent[] gpurpEvents;
-        private static Dictionary<CameraRenderingPath, Func<PipelineResources, PipelineEvent[]>> presetDict = null;
-        public static Dictionary<CameraRenderingPath, Func<PipelineResources, PipelineEvent[]>> GetEventsDict()
+        public void SetRenderingPath()
         {
-            if (presetDict != null) return presetDict;
-            presetDict = new Dictionary<CameraRenderingPath, Func<PipelineResources, PipelineEvent[]>>();
-            presetDict.Add(CameraRenderingPath.DemoPipeline, (res) => res.gpurpEvents);
-            //TODO
-            //Add Pipeline Settings
-            return presetDict;
+            presetDict.Clear();
+            presetDict.Add(CameraRenderingPath.DemoPipeline, demoPipelineEvents);
+            //Add New Events Here
         }
     }
 }

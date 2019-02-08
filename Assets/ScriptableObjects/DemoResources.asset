@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 199fbbc4088ef2c42b073d767fa2da0f, type: 3}
   m_Name: DemoResources
   m_EditorClassIdentifier: 
-  gpurpEvents:
+  demoPipelineEvents:
   - {fileID: 11400000, guid: 18df09991b1d14d479b52ebbbdb7390a, type: 2}

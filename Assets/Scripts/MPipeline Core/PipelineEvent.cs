@@ -32,7 +32,7 @@ namespace MPipeline
     {
         [HideInInspector]
         [SerializeField]
-        private bool enabled = true;
+        private bool enabled = false;
         private bool initialized = false;
         public bool Enabled
         {
@@ -77,10 +77,9 @@ namespace MPipeline
         private List<PipelineEvent> dependedEvents = null;
         private List<PipelineEvent> dependingEvents = null;
         public PipelineResources.CameraRenderingPath renderingPath { get; private set; }
-        public void InitEvent(PipelineResources resources, PipelineResources.CameraRenderingPath renderingPath)
+        public void InitEvent(PipelineResources resources)
         {
             initialized = true;
-            this.renderingPath = renderingPath;
             Init(resources);
             if (enabled)
             {
@@ -107,9 +106,10 @@ namespace MPipeline
                 }
             }
         }
-        public void Prepare()
+        public void Prepare(PipelineResources.CameraRenderingPath renderingPath)
         {
             RequireEventAttribute requireEvt = GetType().GetCustomAttribute<RequireEventAttribute>(true);
+            this.renderingPath = renderingPath;
             if (requireEvt != null)
             {
                 if (dependingEvents == null)

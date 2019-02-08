@@ -17,8 +17,8 @@ namespace MPipeline
         public PipelineResources resources;
         public static T GetEvent<T>(PipelineResources.CameraRenderingPath path) where T : PipelineEvent
         {
-            var allEvents = PipelineResources.GetEventsDict();
-            PipelineEvent[] events = allEvents[path](current.resources);
+            var allEvents = current.resources.renderingPaths;
+            PipelineEvent[] events = allEvents[path];
             for (int i = 0; i < events.Length; ++i)
             {
                 PipelineEvent evt = events[i];
@@ -29,8 +29,8 @@ namespace MPipeline
 
         public static PipelineEvent GetEvent(PipelineResources.CameraRenderingPath path, Type targetType)
         {
-            var allEvents = PipelineResources.GetEventsDict();
-            PipelineEvent[] events = allEvents[path](current.resources);
+            var allEvents = current.resources.renderingPaths;
+            PipelineEvent[] events = allEvents[path];
             for (int i = 0; i < events.Length; ++i)
             {
                 PipelineEvent evt = events[i];
@@ -41,7 +41,8 @@ namespace MPipeline
 
         public RenderPipeline(PipelineResources resources)
         {
-            var allEvents = PipelineResources.GetEventsDict();
+            resources.SetRenderingPath();
+            var allEvents = resources.renderingPaths;
             this.resources = resources;
             current = this;
             data.buffer = new CommandBuffer();
@@ -49,14 +50,14 @@ namespace MPipeline
             var keys = allEvents.Keys;
             foreach (var i in keys)
             {
-                PipelineEvent[] events = allEvents[i](resources);
+                PipelineEvent[] events = allEvents[i];
                 foreach(var j in events)
                 {
-                    j.Prepare();
+                    j.Prepare(i);
                 }
                 foreach (var j in events)
                 {
-                    j.InitEvent(resources, i);
+                    j.InitEvent(resources);
                 }
             }
         }
@@ -66,11 +67,11 @@ namespace MPipeline
             if (current != this) return;
             current = null;
             data.buffer.Dispose();
-            var allEvents = PipelineResources.GetEventsDict();
+            var allEvents = resources.renderingPaths;
             var values = allEvents.Values;
             foreach (var i in values)
             {
-                PipelineEvent[] array = i(resources);
+                PipelineEvent[] array = i;
                 foreach (var j in array)
                 {
                     j.DisposeEvent();
@@ -107,7 +108,6 @@ namespace MPipeline
             if (!CullResults.GetCullingParameters(cam, out data.cullParams)) return;
             context.SetupCameraProperties(cam);
             //Set Global Data
-            data.defaultDrawSettings = new DrawRendererSettings(cam, new ShaderPassName(""));
             data.context = context;
             data.cullResults = CullResults.Cull(ref data.cullParams, context);
             data.resources = resources;
@@ -118,8 +118,8 @@ namespace MPipeline
                 //GPU Driven RP's frustum plane is inverse from SRP's frustum plane
                 data.frustumPlanes[i] = new Vector4(-p.normal.x, -p.normal.y, -p.normal.z, -p.distance);
             }
-            var allEvents = PipelineResources.GetEventsDict();
-            var collect = allEvents[pipelineCam.renderingPath](resources);
+            var allEvents = resources.renderingPaths;
+            var collect = allEvents[pipelineCam.renderingPath];
 #if UNITY_EDITOR
             //Need only check for Unity Editor's bug!
             if (!pipelineChecked[(int)pipelineCam.renderingPath])
@@ -129,7 +129,7 @@ namespace MPipeline
                 {
                     if (!e.CheckProperty())
                     {
-                        e.InitEvent(resources, pipelineCam.renderingPath);
+                        e.InitEvent(resources);
                     }
                 }
             }

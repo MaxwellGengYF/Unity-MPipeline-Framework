@@ -80,14 +80,13 @@ namespace MPipeline
     }
     public struct PipelineCommandData
     {
-        public Matrix4x4 vp;
-        public Matrix4x4 inverseVP;
-        public Vector4[] frustumPlanes;
-        public CommandBuffer buffer;
-        public ScriptableRenderContext context;
-        public CullResults cullResults;
-        public ScriptableCullingParameters cullParams;
-        public PipelineResources resources;
-        public DrawRendererSettings defaultDrawSettings;
+        public Matrix4x4 vp;                            //Current camera's view projection Matrix
+        public Matrix4x4 inverseVP;                     //Current camera's inverse view projection matrix
+        public Vector4[] frustumPlanes;                 //Current camera's frustum planes
+        public CommandBuffer buffer;                    //Main command buffer
+        public ScriptableRenderContext context;         //Main context
+        public CullResults cullResults;                 //Camera's culling results
+        public ScriptableCullingParameters cullParams;  //Camera's culling parameters
+        public PipelineResources resources;             //Resources
     }
 }
