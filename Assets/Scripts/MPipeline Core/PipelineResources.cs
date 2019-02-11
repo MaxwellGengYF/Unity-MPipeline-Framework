@@ -19,7 +19,7 @@ namespace MPipeline
             DemoPipeline = 0
         }
         public PipelineEvent[] demoPipelineEvents;
-        private static Dictionary<CameraRenderingPath, PipelineEvent[]> presetDict = new Dictionary<CameraRenderingPath, PipelineEvent[]>();
+        private Dictionary<CameraRenderingPath, PipelineEvent[]> presetDict = new Dictionary<CameraRenderingPath, PipelineEvent[]>();
         public Dictionary<CameraRenderingPath, PipelineEvent[]> renderingPaths
         {
             get { return presetDict; }
